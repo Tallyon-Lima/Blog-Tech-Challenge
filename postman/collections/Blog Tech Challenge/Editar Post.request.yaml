@@ -1,0 +1,17 @@
+$kind: http-request
+url: http://localhost:3000/posts/6
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"titulo\": \"Teste supremo 3.0\",\r
+
+    \    \"conteudo\": \"Olá Bosnia\",\r
+
+    \    \"disciplina\": \"Qatar TI\",\r
+
+    \    \"autor\": \"2\"\r
+
+    }"
+order: 5000

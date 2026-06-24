@@ -1,0 +1,5 @@
+workspace:
+  id: 33ccf051-4dcc-43c9-8587-ab8db96aa29f
+cloudResources:
+  collections:
+    ../postman/collections/Blog Tech Challenge: 55853731-3c419513-81b3-432d-81f9-8173e7c8cfd5

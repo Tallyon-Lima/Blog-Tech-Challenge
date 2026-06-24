@@ -1,0 +1,17 @@
+$kind: http-request
+url: http://localhost:3000/usuarios
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nome\": \"Professor Cesar\",\r
+
+    \    \"email\": \"cesar@gmail.com\",\r
+
+    \    \"senha\": \"1234\",\r
+
+    \    \"perfil_id\": 2\r
+
+    }"
+order: 3000

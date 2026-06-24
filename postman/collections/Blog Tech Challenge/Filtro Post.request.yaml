@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:3000/posts?pesquisa=bosnia
+method: GET
+queryParams:
+  pesquisa: bosnia
+order: 7000
