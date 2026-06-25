@@ -36,3 +36,6 @@ jobs:
 
       - name: Gerar cobertura
         run: npm run test:coverage
+      
+      - name: Build Docker Image
+        run: docker build -t blog-tech-challenge .
