@@ -1,6 +1,6 @@
 -- Active: 1781218750256@@127.0.0.1@5432@blog_tech_2_db
 
-CREATE TABLE post (
+CREATE TABLE IF NOT EXISTS post (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     conteudo VARCHAR(255) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE post (
     data_atualizacao TIMESTAMP WITHOUT TIME ZONE NOT NULL
 )
 
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NUll,
@@ -17,23 +17,24 @@ CREATE TABLE usuarios (
 )
 
 
-CREATE TABLE perfil_acesso (
+CREATE TABLE IF NOT EXISTS perfil_acesso (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR(255) NOT NULL
 )
 
 alter table post 
-add column autor bigint not null;
+ADD COLUMN IF NOT EXISTS autor bigint not null;
 
 
 alter table usuarios
-add column perfil_id bigint not NULL;
+ADD COLUMN IF NOT EXISTS perfil_id bigint not NULL;
 
 
 INSERT INTO public.perfil_acesso (nome)
 VALUES
     ('Aluno'),
-    ('Professor');
+    ('Professor')
+    ON CONFLICT DO NOTHING;
 
 -- DROP TABLE post ;
 -- DROP TABLE usuarios ;
