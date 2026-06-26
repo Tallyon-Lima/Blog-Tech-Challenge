@@ -39,3 +39,6 @@ jobs:
       
       - name: Build Docker Image
         run: docker build -t blog-tech-challenge .
+
+      - name: Deploy no Render
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
