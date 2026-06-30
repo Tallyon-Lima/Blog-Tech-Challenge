@@ -1,3 +1,4 @@
+import type { IUsuario } from "@/entities/models/usuario.interface.js";
 import type { Usuario } from "@/entities/usuario.entity.js";
 import { db } from "@/lib/pg/db.js";
 
@@ -19,5 +20,15 @@ export class UsuarioRepository{
             `SELECT * FROM usuarios WHERE id = ${id}`
         );
         return result?.rows[0]; 
+    }
+
+        public async findByUsername(username: string): Promise<IUsuario | undefined> {
+        const result = await db.clientInstance?.query(
+            `SELECT * FROM usuario
+             WHERE username = $1`,
+            [username]
+        );
+
+        return result?.rows[0];
     }
 }
