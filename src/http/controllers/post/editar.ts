@@ -38,7 +38,7 @@ export async function editar(request: FastifyRequest, reply: FastifyReply) {
             });
         }
 
-        return reply.status(201).send(post);
+        return reply.status(200).send(post);
 
     } catch (error) {
         console.error(error);

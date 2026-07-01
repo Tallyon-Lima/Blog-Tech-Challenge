@@ -5,5 +5,5 @@ import { signin } from "./signin.js";
 
 export async function usuarioRoutes(app: FastifyInstance){
     app.post('/usuarios', criar);
-    app.post("/user/signin", signin);
+    app.post("/usuarios/signin", signin);
 }

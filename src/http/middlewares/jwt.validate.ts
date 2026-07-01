@@ -5,7 +5,7 @@ export async function validateJwt(
     reply: FastifyReply
 ) {
     try {
-        const routeFreeList = ["POST-/user", "POST-/user/signin"];
+        const routeFreeList = ["POST-/usuarios", "POST-/usuarios/signin"];
         const validateRoute = `${request.method}-${request.routeOptions.url}`;
 
         if (routeFreeList.includes(validateRoute)) return;

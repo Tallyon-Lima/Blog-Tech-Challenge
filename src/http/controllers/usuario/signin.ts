@@ -6,23 +6,23 @@ import z from "zod";
 
 export async function signin(request: FastifyRequest, reply: FastifyReply) {
     const registerBodySchema = z.object({
-        username: z.string(),
-        password: z.string()
+        email: z.string(),
+        senha: z.string()
     });
 
-    const { username, password } = registerBodySchema.parse(request.body);
+    const { email, senha } = registerBodySchema.parse(request.body);
 
     const signinUseCase = makeSigninUseCase();
  
-    const user = await signinUseCase.handler(username);
+    const user = await signinUseCase.handler(email);
 
-    const doesPasswordMatch = await compare(password, user.senha);
+    const doesPasswordMatch = await compare(senha, user.senha);
 
     if (!doesPasswordMatch) {
         throw new InvalidCredentialsError();
     }
 
-    const token = await reply.jwtSign({ username });
+    const token = await reply.jwtSign({ email });
 
     return reply.status(200).send({ token });
 }

@@ -22,11 +22,11 @@ export class UsuarioRepository{
         return result?.rows[0]; 
     }
 
-        public async findByUsername(username: string): Promise<IUsuario | undefined> {
+        public async findByUsername(email: string): Promise<IUsuario | undefined> {
         const result = await db.clientInstance?.query(
-            `SELECT * FROM usuario
-             WHERE username = $1`,
-            [username]
+            `SELECT * FROM usuarios
+             WHERE email = $1`,
+            [email]
         );
 
         return result?.rows[0];

@@ -2,6 +2,7 @@ import { UsuarioRepository } from "@/repositories/usuario.repository.js";
 import { CriarUsuarioUseCase } from "@/use-cases/usuario/criar-usuario.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
+import { hash } from "bcryptjs";
 
 
 export async function criar(request: FastifyRequest, reply: FastifyReply) {
@@ -17,9 +18,11 @@ export async function criar(request: FastifyRequest, reply: FastifyReply) {
     try{
         const usuarioRepository = new UsuarioRepository();
         const criarUsuarioUseCase = new CriarUsuarioUseCase(usuarioRepository);
+        
+        const senhaHash = await hash(senha, 10);
 
         const usuario = await criarUsuarioUseCase.handler({
-            nome, email, senha, perfil_id
+            nome, email, senha: senhaHash, perfil_id
         });
 
         return reply.status(201).send(usuario)

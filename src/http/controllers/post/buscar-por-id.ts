@@ -16,10 +16,10 @@ export async function buscarPorId(request: FastifyRequest, reply: FastifyReply) 
         const post = await buscarPostUseCase.handler(id);
 
         if(post){
-            return reply.status(204).send(post);
+            return reply.status(200).send(post);
         }
 
-        return reply.status(200).send({
+        return reply.status(204).send({
             "mensagem": "Post não encontrado"
         });
     } catch (error) {

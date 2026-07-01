@@ -7,13 +7,11 @@ import z from "zod";
 export async function filtro(request: FastifyRequest, reply: FastifyReply) {
     try {
         const registerQuerySchema = z.object({
-            paginaAtual: z.coerce.number(),
+            paginaAtual: z.coerce.number().default(1),
             pesquisa: z.string()
         });
 
         let { paginaAtual, pesquisa } = registerQuerySchema.parse(request.query);
-
-        paginaAtual = paginaAtual > 0 ? paginaAtual : 1;
 
         const postRepository = new PostRepository();
         const filtroPostUseCase = new FiltroPostUseCase(postRepository);
