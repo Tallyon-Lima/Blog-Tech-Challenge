@@ -13,11 +13,13 @@ export async function filtro(request: FastifyRequest, reply: FastifyReply) {
 
         let { paginaAtual, pesquisa } = registerQuerySchema.parse(request.query);
 
+        const pagina = Math.max(1, paginaAtual);
+
         const postRepository = new PostRepository();
         const filtroPostUseCase = new FiltroPostUseCase(postRepository);
 
 
-        const listaPost = await filtroPostUseCase.handler(paginaAtual, pesquisa);
+        const listaPost = await filtroPostUseCase.handler(pagina, pesquisa);
 
         return reply.status(200).send(listaPost);
     } catch (error) {

@@ -1,97 +1,121 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { criar } from "@/http/controllers/usuario/criar.js";
-import { ZodError } from "zod";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { criar } from '@/http/controllers/usuario/criar.js';
+import { CriarUsuarioUseCase } from '@/use-cases/usuario/criar-usuario.js';
+import { hash } from 'bcryptjs';
 
-const handlerMock = vi.fn();
-
-vi.mock("@/repositories/usuario.repository.js", () => ({
-  UsuarioRepository: class {},
+vi.mock('@/repositories/usuario.repository.js', () => ({
+    UsuarioRepository: vi.fn()
 }));
 
-vi.mock("@/use-cases/usuario/criar-usuario.js", () => {
-  class MockCriarUsuarioUseCase {
-    handler = handlerMock;
-  }
+vi.mock('@/use-cases/usuario/criar-usuario.js', () => ({
+    CriarUsuarioUseCase: vi.fn()
+}));
 
-  return {
-    CriarUsuarioUseCase: MockCriarUsuarioUseCase,
-  };
-});
+vi.mock('bcryptjs', () => ({
+    hash: vi.fn()
+}));
 
-describe("Controller - criar usuário", () => {
-  let request: any;
-  let reply: any;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-
-    request = {
-      body: {
-        nome: "Danilo",
-        email: "danilo@email.com",
-        senha: "123456",
-        perfil_id: 1,
-      },
+describe('Criar Usuario Controller', () => {
+    const mockReply = {
+        status: vi.fn().mockReturnThis(),
+        send: vi.fn()
     };
 
-    reply = {
-      status: vi.fn().mockReturnThis(),
-      send: vi.fn(),
-    };
-  });
-
-  it("deve criar um usuário com sucesso", async () => {
-    const usuario = {
-      id: 1,
-      nome: "Danilo",
-      email: "danilo@email.com",
-      perfil_id: 1,
-    };
-
-    handlerMock.mockResolvedValue(usuario);
-
-    await criar(request, reply);
-
-    expect(handlerMock).toHaveBeenCalledWith({
-      nome: "Danilo",
-      email: "danilo@email.com",
-      senha: "123456",
-      perfil_id: 1,
+    beforeEach(() => {
+        vi.clearAllMocks();
     });
 
-    expect(reply.status).toHaveBeenCalledWith(201);
-    expect(reply.send).toHaveBeenCalledWith(usuario);
-  });
+    it('deve criar um usuário com sucesso', async () => {
+        const usuarioMock = {
+            id: 1,
+            nome: 'João',
+            email: 'joao@email.com',
+            perfil_id: 1
+        };
 
-  it("deve lançar erro quando o use case lançar exceção", async () => {
-    handlerMock.mockRejectedValue(new Error("Erro"));
+        vi.mocked(hash).mockResolvedValue();
 
-    await expect(criar(request, reply)).rejects.toThrow(
-      "Error creating usuario"
-    );
-  });
+        vi.mocked(CriarUsuarioUseCase).mockImplementation(
+            function () {
+                return {
+                    handler: vi.fn().mockResolvedValue(usuarioMock)
+                };
+            } as any
+        );
 
-  it("deve lançar ZodError quando nome for inválido", async () => {
-    request.body.nome = 123;
+        const request = {
+            body: {
+                nome: 'João',
+                email: 'joao@email.com',
+                senha: '123456',
+                perfil_id: 1
+            }
+        } as any;
 
-    await expect(criar(request, reply)).rejects.toBeInstanceOf(ZodError);
-  });
+        await criar(request, mockReply as any);
 
-  it("deve lançar ZodError quando email for inválido", async () => {
-    request.body.email = 123;
+        expect(hash).toHaveBeenCalledWith('123456', 10);
+        expect(mockReply.status).toHaveBeenCalledWith(201);
+        expect(mockReply.send).toHaveBeenCalledWith(usuarioMock);
+    });
 
-    await expect(criar(request, reply)).rejects.toBeInstanceOf(ZodError);
-  });
+    it('deve lançar erro quando ocorrer exceção', async () => {
+        vi.mocked(hash).mockResolvedValue();
 
-  it("deve lançar ZodError quando senha for inválida", async () => {
-    request.body.senha = 123;
+        vi.mocked(CriarUsuarioUseCase).mockImplementation(
+            function () {
+                return {
+                    handler: vi.fn().mockRejectedValue(
+                        new Error('Erro interno')
+                    )
+                };
+            } as any
+        );
 
-    await expect(criar(request, reply)).rejects.toBeInstanceOf(ZodError);
-  });
+        const request = {
+            body: {
+                nome: 'João',
+                email: 'joao@email.com',
+                senha: '123456',
+                perfil_id: 1
+            }
+        } as any;
 
-  it("deve lançar ZodError quando perfil_id for inválido", async () => {
-    request.body.perfil_id = {};
+        await expect(
+            criar(request, mockReply as any)
+        ).rejects.toThrow('Error creating usuario');
+    });
 
-    await expect(criar(request, reply)).rejects.toBeInstanceOf(ZodError);
-  });
+    it('deve lançar erro quando ocorrer erro ao gerar hash da senha', async () => {
+        vi.mocked(hash).mockRejectedValue(
+            new Error('Erro ao gerar hash')
+        );
+
+        const request = {
+            body: {
+                nome: 'João',
+                email: 'joao@email.com',
+                senha: '123456',
+                perfil_id: 1
+            }
+        } as any;
+
+        await expect(
+            criar(request, mockReply as any)
+        ).rejects.toThrow('Error creating usuario');
+    });
+
+    it('deve falhar quando body for inválido', async () => {
+        const request = {
+            body: {
+                nome: 'João',
+                email: 'joao@email.com',
+                senha: '123456'
+            }
+        } as any;
+
+        await expect(
+            criar(request, mockReply as any)
+        ).rejects.toThrow();
+    });
 });

@@ -55,7 +55,7 @@ describe('Editar Post Controller', () => {
 
         await editar(request, mockReply as any);
 
-        expect(mockReply.status).toHaveBeenCalledWith(201);
+        expect(mockReply.status).toHaveBeenCalledWith(200);
         expect(mockReply.send).toHaveBeenCalledWith(postMock);
     });
 

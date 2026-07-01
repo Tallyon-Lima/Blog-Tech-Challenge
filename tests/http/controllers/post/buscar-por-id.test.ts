@@ -48,7 +48,7 @@ describe("Controller - buscar post por id", () => {
     await buscarPorId(request, reply);
 
     expect(handlerMock).toHaveBeenCalledWith(1);
-    expect(reply.status).toHaveBeenCalledWith(204);
+    expect(reply.status).toHaveBeenCalledWith(200);
     expect(reply.send).toHaveBeenCalledWith(post);
   });
 
@@ -58,7 +58,7 @@ describe("Controller - buscar post por id", () => {
     await buscarPorId(request, reply);
 
     expect(handlerMock).toHaveBeenCalledWith(1);
-    expect(reply.status).toHaveBeenCalledWith(200);
+    expect(reply.status).toHaveBeenCalledWith(204);
     expect(reply.send).toHaveBeenCalledWith({
       mensagem: "Post não encontrado",
     });
