@@ -31,4 +31,12 @@ export class UsuarioRepository{
 
         return result?.rows[0];
     }
+
+    public async listar(): Promise<Usuario[] | undefined> {
+        const result = await db.clientInstance?.query(
+            `SELECT * FROM usuarios`
+        );
+        return result?.rows;
+
+    }
 }
