@@ -9,7 +9,7 @@ export const app = fastify();
 
 app.register(fastifyJwt, {
     secret: env.JWT_SECRET,
-    sign: { expiresIn: '260m' }
+    sign: { expiresIn: '30m' }
 });
 
 app.addHook('onRequest', validateJwt);
