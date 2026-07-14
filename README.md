@@ -47,7 +47,7 @@ A transição de um modelo de desenvolvimento *low-code* (plataforma OutSystems 
 
 ## 🔗 Links
 
-* [Vídeo de apresentação do projeto](#) *(Substitua este texto pelo link)*
+* [Vídeo de apresentação do projeto](https://youtu.be/B1qlF5oFA4E) 
 
 ## ⚙️ Como Executar o Projeto (Localmente)
 
