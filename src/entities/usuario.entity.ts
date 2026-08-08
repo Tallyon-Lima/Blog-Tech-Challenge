@@ -7,7 +7,7 @@ export class Usuario implements IUsuario{
     senha: string
     perfil_id: number
 
-    constructor(nome: string, email: string, senha: string, perfil_id: number){
+    constructor(nome: string, email: string, senha: string, perfil_id: number) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
