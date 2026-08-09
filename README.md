@@ -85,7 +85,7 @@ Isso irá baixar a imagem do PostgreSQL e subir um container em background.
     npm run db:migrate
 
 7. **Inicie o servidor de desenvolvimento:**
-    npm run dev
+    npm run start:dev
 
 A API estará disponível em `http://localhost:3000`.
 
