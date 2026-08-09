@@ -53,7 +53,12 @@ describe('Signin Controller', () => {
         });
         expect(mockReply.status).toHaveBeenCalledWith(200);
         expect(mockReply.send).toHaveBeenCalledWith({
-            token: 'token-jwt'
+            token: 'token-jwt',
+            "user": {
+            "email": "teste@email.com",
+            "id": 1,
+            "senha": "senhaHash",
+            },
         });
     });
 
