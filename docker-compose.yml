@@ -8,16 +8,16 @@ services:
     container_name: blog-tech-app
     restart: always
     ports:
-      "3000:3000"
-  environment:
-    NODE_ENV: production
-    DB_HOST: postgres
-    DB_PORT: 5432
-    DB_USER: blog_tech
-    DB_PASSWORD: tech20262
-    DB_NAME: blog_tech_2_db
-  depends_on:
-    postgres
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: blog_tech
+      DB_PASSWORD: tech20262
+      DB_NAME: blog_tech_2_db
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:17
@@ -28,9 +28,9 @@ services:
       POSTGRES_PASSWORD: tech20262
       POSTGRES_DB: blog_tech_2_db
     ports: 
-      "5432:5432"
-  volumes:
-    postgres_data:/var/lib/postgresql/data
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
