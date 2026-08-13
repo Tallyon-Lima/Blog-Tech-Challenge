@@ -1,9 +1,9 @@
--- Active: 1781218750256@@127.0.0.1@5432@blog_tech_2_db
+-- Active: 1781218750256@@127.0.0.1@5432
 
 CREATE TABLE IF NOT EXISTS post (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
-    conteudo VARCHAR(255) NOT NULL,
+    conteudo TEXT NOT NULL,
     disciplina VARCHAR(255) NOT NULL,
     data_criacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     data_atualizacao TIMESTAMP WITHOUT TIME ZONE NOT NULL
@@ -30,7 +30,8 @@ ADD COLUMN IF NOT EXISTS perfil_id bigint not NULL;
 INSERT INTO public.perfil_acesso (nome)
 VALUES
     ('Aluno'),
-    ('Professor')
+    ('Professor'),
+    ('Admin')
     ON CONFLICT DO NOTHING;
 
 -- DROP TABLE post ;
