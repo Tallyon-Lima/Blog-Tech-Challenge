@@ -5,6 +5,7 @@ import { comentarioRoutes } from '@/http/controllers/comentario/routes.js'
 import fastifyJwt from '@fastify/jwt';
 import { env } from './env/index.js';
 import { validateJwt } from './http/middlewares/jwt.validate.js';
+import { emailRoutes } from './http/controllers/email/routes.js';
 
 export const app = fastify();
 
@@ -18,3 +19,4 @@ app.addHook('onRequest', validateJwt);
 app.register(postRoutes);
 app.register(usuarioRoutes);
 app.register(comentarioRoutes);
+app.register(emailRoutes);
