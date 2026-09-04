@@ -95,3 +95,4 @@ Para executar a suíte de testes unitários com o Vitest e verificar a cobertura
 
 Ou para ver a cobertura de código:
     npm run test:coverage
+    
