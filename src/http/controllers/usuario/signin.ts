@@ -22,7 +22,11 @@ export async function signin(request: FastifyRequest, reply: FastifyReply) {
         throw new InvalidCredentialsError();
     }
 
-    const token = await reply.jwtSign({ email });
+    const token = await reply.jwtSign({
+        id: user.id,
+        email: user.email,
+        perfil_id: user.perfil_id
+    });
 
     return reply.status(200).send({ token,  user });
 }

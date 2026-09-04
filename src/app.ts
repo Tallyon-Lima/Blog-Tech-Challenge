@@ -5,8 +5,14 @@ import { comentarioRoutes } from '@/http/controllers/comentario/routes.js'
 import fastifyJwt from '@fastify/jwt';
 import { env } from './env/index.js';
 import { validateJwt } from './http/middlewares/jwt.validate.js';
+import fastifyCors from '@fastify/cors';
 
 export const app = fastify();
+
+app.register(fastifyCors, {
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+})
 
 app.register(fastifyJwt, {
     secret: env.JWT_SECRET,
