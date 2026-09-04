@@ -25,7 +25,7 @@ describe('Criar Usuario Controller', () => {
         vi.clearAllMocks();
     });
 
-    it('deve criar um usuário com sucesso', async () => {
+    it('deve criar um usuário com sucesso quando o solicitante for admin', async () => {
         const usuarioMock = {
             id: 1,
             nome: 'João',
@@ -33,7 +33,7 @@ describe('Criar Usuario Controller', () => {
             perfil_id: 1
         };
 
-        vi.mocked(hash).mockResolvedValue();
+        vi.mocked(hash).mockResolvedValue('hash123' as any);
 
         vi.mocked(CriarUsuarioUseCase).mockImplementation(
             function () {
@@ -44,6 +44,11 @@ describe('Criar Usuario Controller', () => {
         );
 
         const request = {
+            user: {
+                id: 99,
+                email: 'admin@email.com',
+                perfil_id: 3
+            },
             body: {
                 nome: 'João',
                 email: 'joao@email.com',
@@ -59,8 +64,41 @@ describe('Criar Usuario Controller', () => {
         expect(mockReply.send).toHaveBeenCalledWith(usuarioMock);
     });
 
+    it('deve retornar status 403 quando o solicitante não tiver permissão', async () => {
+        vi.mocked(hash).mockResolvedValue('hash123' as any);
+
+        vi.mocked(CriarUsuarioUseCase).mockImplementation(
+            function () {
+                return {
+                    handler: vi.fn().mockResolvedValue("sem_permissao")
+                };
+            } as any
+        );
+
+        const request = {
+            user: {
+                id: 2,
+                email: 'aluno@email.com',
+                perfil_id: 1
+            },
+            body: {
+                nome: 'Novo Aluno',
+                email: 'novoaluno@email.com',
+                senha: '123456',
+                perfil_id: 1
+            }
+        } as any;
+
+        await criar(request, mockReply as any);
+
+        expect(mockReply.status).toHaveBeenCalledWith(403);
+        expect(mockReply.send).toHaveBeenCalledWith({
+            mensagem: "Apenas administradores podem criar usuários"
+        });
+    });
+
     it('deve lançar erro quando ocorrer exceção', async () => {
-        vi.mocked(hash).mockResolvedValue();
+        vi.mocked(hash).mockResolvedValue('hash123' as any);
 
         vi.mocked(CriarUsuarioUseCase).mockImplementation(
             function () {

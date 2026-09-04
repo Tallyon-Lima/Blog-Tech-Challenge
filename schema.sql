@@ -30,7 +30,8 @@ ADD COLUMN IF NOT EXISTS perfil_id bigint not NULL;
 INSERT INTO public.perfil_acesso (nome)
 VALUES
     ('Aluno'),
-    ('Professor')
+    ('Professor'),
+    ('Administrador')
     ON CONFLICT DO NOTHING;
 
 -- DROP TABLE post ;
