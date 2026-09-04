@@ -64,6 +64,54 @@ describe('Criar Usuario Controller', () => {
         expect(mockReply.send).toHaveBeenCalledWith(usuarioMock);
     });
 
+    it('deve criar um usuário com CPF quando fornecido', async () => {
+        const usuarioMock = {
+            id: 2,
+            nome: 'Maria',
+            email: 'maria@email.com',
+            perfil_id: 1,
+            cpf: '123.456.789-00'
+        };
+
+        const handlerMock = vi.fn().mockResolvedValue(usuarioMock);
+        vi.mocked(hash).mockResolvedValue('hash123' as any);
+
+        vi.mocked(CriarUsuarioUseCase).mockImplementation(
+            function () {
+                return {
+                    handler: handlerMock
+                };
+            } as any
+        );
+
+        const request = {
+            user: {
+                id: 99,
+                email: 'admin@email.com',
+                perfil_id: 3
+            },
+            body: {
+                nome: 'Maria',
+                email: 'maria@email.com',
+                senha: '123456',
+                perfil_id: 1,
+                cpf: '123.456.789-00'
+            }
+        } as any;
+
+        await criar(request, mockReply as any);
+
+        expect(handlerMock).toHaveBeenCalledWith(
+            expect.objectContaining({
+                cpf: '123.456.789-00'
+            }),
+            99,
+            3
+        );
+        expect(mockReply.status).toHaveBeenCalledWith(201);
+        expect(mockReply.send).toHaveBeenCalledWith(usuarioMock);
+    });
+
     it('deve retornar status 403 quando o solicitante não tiver permissão', async () => {
         vi.mocked(hash).mockResolvedValue('hash123' as any);
 

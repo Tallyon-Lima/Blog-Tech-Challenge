@@ -10,10 +10,11 @@ export async function criar(request: FastifyRequest, reply: FastifyReply) {
         email: z.string(),
         senha: z.string(),
         perfil_id: z.coerce.number(),
+        cpf: z.string().optional(),
         usuario_solicitante: z.coerce.number().optional()
     });
 
-    const { nome, email, senha, perfil_id, usuario_solicitante } = registerBodySchema.parse(request.body);
+    const { nome, email, senha, perfil_id, cpf, usuario_solicitante } = registerBodySchema.parse(request.body);
 
     try {
         const usuarioRepository = new UsuarioRepository();
@@ -37,7 +38,8 @@ export async function criar(request: FastifyRequest, reply: FastifyReply) {
                 nome,
                 email,
                 senha: senhaHash,
-                perfil_id
+                perfil_id,
+                cpf
             },
             solicitanteId,
             solicitantePerfilId

@@ -8,14 +8,15 @@ export async function editar(request: FastifyRequest, reply: FastifyReply) {
         nome: z.string(),
         email: z.string(),
         senha: z.string(),
-        perfil_id: z.coerce.number()
+        perfil_id: z.coerce.number(),
+        cpf: z.string().optional()
     });
 
     const registerQuerySchema = z.object({
         id: z.coerce.number(),
     });
 
-    const { nome, email, senha, perfil_id } = resgiterBodySchema.parse(request.body);
+    const { nome, email, senha, perfil_id, cpf } = resgiterBodySchema.parse(request.body);
     let { id } = registerQuerySchema.parse(request.params);
 
     try {
@@ -27,6 +28,7 @@ export async function editar(request: FastifyRequest, reply: FastifyReply) {
             email,
             senha,
             perfil_id,
+            cpf,
             id
         });
 
