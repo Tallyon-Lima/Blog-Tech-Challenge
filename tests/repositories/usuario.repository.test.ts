@@ -19,7 +19,7 @@ describe("UsuarioRepository", () => {
     repository = new UsuarioRepository();
   });
 
-  it("deve criar um usuário", async () => {
+  it("deve criar um usuário sem cpf", async () => {
     const usuario = {
       nome: "João",
       email: "joao@email.com",
@@ -34,13 +34,44 @@ describe("UsuarioRepository", () => {
     const result = await repository.criar(usuario as any);
 
     expect(queryMock).toHaveBeenCalledWith(
-      `INSERT INTO usuarios (nome, email, senha, perfil_id)
-            VALUES ($1, $2, $3, $4)`,
+      `INSERT INTO usuarios (nome, email, senha, perfil_id, cpf)
+            VALUES ($1, $2, $3, $4, $5)`,
       [
         "João",
         "joao@email.com",
         "123456",
         1,
+        null,
+      ]
+    );
+
+    expect(result).toEqual(usuario);
+  });
+
+  it("deve criar um usuário com cpf", async () => {
+    const usuario = {
+      nome: "Carlos",
+      email: "carlos@email.com",
+      senha: "123456",
+      perfil_id: 1,
+      cpf: "123.456.789-00",
+    };
+
+    queryMock.mockResolvedValue({
+      rows: [usuario],
+    } as any);
+
+    const result = await repository.criar(usuario as any);
+
+    expect(queryMock).toHaveBeenCalledWith(
+      `INSERT INTO usuarios (nome, email, senha, perfil_id, cpf)
+            VALUES ($1, $2, $3, $4, $5)`,
+      [
+        "Carlos",
+        "carlos@email.com",
+        "123456",
+        1,
+        "123.456.789-00",
       ]
     );
 
@@ -129,5 +160,28 @@ describe("UsuarioRepository", () => {
     );
 
     expect(result).toBeUndefined();
+  });
+
+  it("deve buscar usuário por cpf", async () => {
+    const usuario = {
+      id: 1,
+      nome: "Carlos",
+      email: "carlos@email.com",
+      cpf: "123.456.789-00",
+    };
+
+    queryMock.mockResolvedValue({
+      rows: [usuario],
+    } as any);
+
+    const result = await repository.findByCpf("123.456.789-00");
+
+    expect(queryMock).toHaveBeenCalledWith(
+      `SELECT * FROM usuarios
+             WHERE cpf = $1`,
+      ["123.456.789-00"]
+    );
+
+    expect(result).toEqual(usuario);
   });
 });

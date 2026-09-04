@@ -27,7 +27,8 @@ describe('Signin Controller', () => {
         const usuarioMock = {
             id: 1,
             email: 'teste@email.com',
-            senha: 'senhaHash'
+            senha: 'senhaHash',
+            perfil_id: 1
         };
 
         vi.mocked(makeSigninUseCase).mockReturnValue({
@@ -49,7 +50,9 @@ describe('Signin Controller', () => {
 
         expect(compare).toHaveBeenCalledWith('123456', 'senhaHash');
         expect(mockReply.jwtSign).toHaveBeenCalledWith({
-            email: 'teste@email.com'
+            id: 1,
+            email: 'teste@email.com',
+            perfil_id: 1
         });
         expect(mockReply.status).toHaveBeenCalledWith(200);
         expect(mockReply.send).toHaveBeenCalledWith({
@@ -58,6 +61,7 @@ describe('Signin Controller', () => {
             "email": "teste@email.com",
             "id": 1,
             "senha": "senhaHash",
+            "perfil_id": 1
             },
         });
     });
