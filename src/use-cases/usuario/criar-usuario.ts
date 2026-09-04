@@ -1,9 +1,10 @@
 import type { Usuario } from "@/entities/usuario.entity.js";
 import type { UsuarioRepository } from "@/repositories/usuario.repository.js";
 import { isPerfilAdmin } from "@/entities/models/perfil.enum.js";
+import { hash } from "bcryptjs";
 
 export class CriarUsuarioUseCase {
-    constructor(private usuarioRepository: UsuarioRepository) {}
+    constructor(private usuarioRepository: UsuarioRepository) { }
 
     async handler(
         usuario: Usuario,
@@ -24,6 +25,26 @@ export class CriarUsuarioUseCase {
         if (!isAdmin) {
             return "sem_permissao";
         }
+
+        // Gera a senha com o sobrenome + últimos 3 dígitos do CPF
+        if (!usuario.cpf) {
+            throw new Error("CPF é obrigatório para criar o usuário");
+        }
+
+        const nomes = usuario.nome.trim().split(/\s+/);
+        const nomeSenha = nomes[nomes.length - 1]
+            ?.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+        const ultimosTresDigitos = usuario.cpf.slice(-3);
+        const caracteresEspeciais = ["@", "#", "$", "%", "&", "*", "!",];
+        const caractereEspecial =
+            caracteresEspeciais[
+            Math.floor(Math.random() * caracteresEspeciais.length)
+            ];
+        const senha = `${nomeSenha}${caractereEspecial}${ultimosTresDigitos}`;
+        
+        usuario.senha = await hash(senha, 10);
 
         return this.usuarioRepository.criar(usuario);
     }

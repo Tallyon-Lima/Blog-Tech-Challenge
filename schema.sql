@@ -28,7 +28,7 @@ alter table usuarios
 ADD COLUMN IF NOT EXISTS perfil_id bigint not NULL;
 
 alter table usuarios
-ADD COLUMN IF NOT EXISTS cpf VARCHAR(14);
+ADD COLUMN IF NOT EXISTS cpf VARCHAR(14) NOT NULL;
 
 INSERT INTO public.perfil_acesso (nome)
 VALUES
