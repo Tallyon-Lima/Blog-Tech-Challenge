@@ -2,13 +2,13 @@ import type { IUsuario } from "@/entities/models/usuario.interface.js";
 import type { Usuario } from "@/entities/usuario.entity.js";
 import { db } from "@/lib/pg/db.js";
 
-export class UsuarioRepository{
+export class UsuarioRepository {
 
-    public async criar({nome, email ,senha, perfil_id}: Usuario): Promise<Usuario | undefined> {
+    public async criar({ nome, email, senha, perfil_id, cpf }: Usuario): Promise<Usuario | undefined> {
         const result = await db.clientInstance?.query(
-            `INSERT INTO usuarios (nome, email, senha, perfil_id)
-            VALUES ($1, $2, $3, $4)`,
-            [nome, email, senha, Number(perfil_id)]
+            `INSERT INTO usuarios (nome, email, senha, perfil_id, cpf)
+            VALUES ($1, $2, $3, $4, $5)`,
+            [nome, email, senha, Number(perfil_id), cpf ?? null]
         );
         return result?.rows[0];
     }
@@ -25,6 +25,16 @@ export class UsuarioRepository{
             `SELECT * FROM usuarios
              WHERE email = $1`,
             [email]
+        );
+
+        return result?.rows[0];
+    }
+
+    public async findByCpf(cpf: string): Promise<IUsuario | undefined> {
+        const result = await db.clientInstance?.query(
+            `SELECT * FROM usuarios
+             WHERE cpf = $1`,
+            [cpf]
         );
 
         return result?.rows[0];
@@ -51,14 +61,16 @@ export class UsuarioRepository{
             nome = $1,
             email = $2,
             senha = $3,
-            perfil_id = $4
-         WHERE id = $5
+            perfil_id = $4,
+            cpf = $5
+         WHERE id = $6
          RETURNING *`,
             [
                 usuario.nome,
                 usuario.email,
                 usuario.senha,
                 usuario.perfil_id,
+                usuario.cpf ?? null,
                 usuario.id
             ]
         );

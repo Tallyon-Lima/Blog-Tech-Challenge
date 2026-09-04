@@ -40,6 +40,27 @@ describe("CriarUsuarioUseCase", () => {
     expect(result).toEqual({ id: 10, ...novoUsuario });
   });
 
+  it("deve repassar o cpf ao criar usuário", async () => {
+    const novoUsuario = {
+      nome: "Novo Aluno com CPF",
+      email: "aluno.cpf@teste.com",
+      senha: "hash",
+      perfil_id: PerfilUsuario.ALUNO,
+      cpf: "123.456.789-00",
+    };
+
+    vi.mocked(repository.criar).mockResolvedValue({ id: 12, ...novoUsuario } as any);
+
+    const result = await useCase.handler(
+      novoUsuario as any,
+      99,
+      PerfilUsuario.ADMIN
+    );
+
+    expect(repository.criar).toHaveBeenCalledWith(novoUsuario);
+    expect(result).toEqual({ id: 12, ...novoUsuario });
+  });
+
   it("deve permitir que um admin crie um usuário buscando o perfil pelo solicitanteId no repositório", async () => {
     const novoUsuario = {
       nome: "Novo Aluno",
