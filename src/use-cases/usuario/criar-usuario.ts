@@ -2,6 +2,8 @@ import type { Usuario } from "@/entities/usuario.entity.js";
 import type { UsuarioRepository } from "@/repositories/usuario.repository.js";
 import { isPerfilAdmin } from "@/entities/models/perfil.enum.js";
 import { hash } from "bcryptjs";
+import { NodemailerEmailProvider } from "@/lib/nodemailer/NodemailerEmailProvider .js";
+import { EnviarEmailAcessoUseCase } from "../email/enviar-acesso-email.js";
 
 export class CriarUsuarioUseCase {
     constructor(private usuarioRepository: UsuarioRepository) { }
@@ -46,6 +48,21 @@ export class CriarUsuarioUseCase {
         
         usuario.senha = await hash(senha, 10);
 
-        return this.usuarioRepository.criar(usuario);
+        const usuarioRetorno = await this.usuarioRepository.criar(usuario);
+        console.log(usuarioRetorno?.nome)
+        if (usuarioRetorno?.nome && usuarioRetorno?.email) {
+            const emailProvider = new NodemailerEmailProvider();
+            const enviarEmailAcessoUseCase =
+                new EnviarEmailAcessoUseCase(emailProvider);
+
+            await enviarEmailAcessoUseCase.handler({
+                nome: usuarioRetorno.nome,
+                email: usuarioRetorno.email,
+                senha,
+            });
+        
+        }
+
+        return usuarioRetorno;
     }
 }
