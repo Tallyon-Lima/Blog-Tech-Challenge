@@ -11,38 +11,50 @@ export class PostRepository {
         return result?.rows[0];
     }
 
-    public async listar(paginaAtual: number, pesquisa?: string): Promise<Post[] | undefined> {
-        let sql =
-            `  SELECT 
+    public async listar(
+        paginaAtual: number,
+        itensPagina: number,
+        pesquisa?: string
+    ): Promise<Post[] | undefined> {
+
+        let sql = `
+            SELECT 
                 post.id,
                 post.titulo,
                 post.conteudo,
                 post.disciplina,
                 post.data_criacao,
                 post.data_atualizacao,
-                usuarios.nome as autor
-                FROM post 
-                LEFT JOIN usuarios
-                ON usuarios.id = post.autor`;
-
-        const params: any[] = [];
-        if (pesquisa) {
-            sql += `
-            WHERE (
-                titulo ILIKE $1
-                OR conteudo ILIKE $1
-                OR disciplina ILIKE $1
-            )
+                usuarios.nome AS autor
+            FROM post 
+            LEFT JOIN usuarios
+                ON usuarios.id = post.autor
         `;
 
+        const params: any[] = [];
 
-        sql += `
-                ORDER BY data_criacao DESC
-                LIMIT 10
-                OFFSET ${(paginaAtual - 1) * 5}`
+        if (pesquisa) {
+            sql += `
+                WHERE (
+                    post.titulo ILIKE $1
+                    OR post.conteudo ILIKE $1
+                    OR post.disciplina ILIKE $1
+                )
+            `;
 
             params.push(`%${pesquisa}%`);
         }
+
+        const offset = (paginaAtual - 1) * itensPagina;
+
+        params.push(itensPagina);
+        params.push(offset);
+
+        sql += `
+            ORDER BY post.data_criacao ASC
+            LIMIT $${params.length - 1}
+            OFFSET $${params.length}
+        `;
 
         const result = await db.clientInstance?.query(sql, params);
 
