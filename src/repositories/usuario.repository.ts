@@ -7,7 +7,8 @@ export class UsuarioRepository {
     public async criar({ nome, email, senha, perfil_id, cpf }: Usuario): Promise<Usuario | undefined> {
         const result = await db.clientInstance?.query(
             `INSERT INTO usuarios (nome, email, senha, perfil_id, cpf)
-            VALUES ($1, $2, $3, $4, $5)`,
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *`,
             [nome, email, senha, Number(perfil_id), cpf ?? null]
         );
         return result?.rows[0];
