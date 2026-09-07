@@ -8,13 +8,13 @@ export async function listar(request: FastifyRequest, reply: FastifyReply) {
     try {
         const registerQuerySchema = z.object({
             paginaAtual: z.coerce.number(),
-            itensPagina: z.coerce.number(),
+            itensPagina: z.coerce.number()
         });
 
         let { paginaAtual, itensPagina } = registerQuerySchema.parse(request.query);
  
         paginaAtual = paginaAtual > 0 ? paginaAtual : 1;
-        itensPagina = itensPagina > 0 ? itensPagina : 10;
+        itensPagina = itensPagina > 0 ? itensPagina : 6;
 
         const postRepository = new PostRepository();
         const listarPostUseCase = new ListarPostUseCase(postRepository);
