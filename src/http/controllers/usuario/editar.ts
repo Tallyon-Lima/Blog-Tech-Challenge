@@ -7,7 +7,6 @@ export async function editar(request: FastifyRequest, reply: FastifyReply) {
     const resgiterBodySchema = z.object({
         nome: z.string(),
         email: z.string(),
-        senha: z.string(),
         perfil_id: z.coerce.number(),
         cpf: z.string().optional()
     });
@@ -16,7 +15,7 @@ export async function editar(request: FastifyRequest, reply: FastifyReply) {
         id: z.coerce.number(),
     });
 
-    const { nome, email, senha, perfil_id, cpf } = resgiterBodySchema.parse(request.body);
+    const { nome, email, perfil_id, cpf } = resgiterBodySchema.parse(request.body);
     let { id } = registerQuerySchema.parse(request.params);
 
     try {
@@ -26,7 +25,7 @@ export async function editar(request: FastifyRequest, reply: FastifyReply) {
         const usuario = await editarUsuarioUseCase.handler({
             nome,
             email,
-            senha,
+            senha: "",
             perfil_id,
             cpf,
             id

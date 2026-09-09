@@ -14,6 +14,6 @@ export class EditarUsuarioUseCase {
 
         this.usuarioRepository.editar(usuario);
 
-        return `sucesso ao editar o usuário de id ${usuario.id}`;
+        return usuario;
     }
 }
