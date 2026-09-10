@@ -9,7 +9,7 @@ export class CriarPostUseCase{
 
     async handler(post: Post){
         const autor = await this.usuarioRepository.buscarPorId(post.autor);
-        if(autor?.perfil_id == 2){
+        if(autor?.perfil_id == 2 || autor?.perfil_id == 3){
             return this.postRepository.criar(post);
         }
         return null;

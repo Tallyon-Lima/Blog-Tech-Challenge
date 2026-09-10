@@ -7,7 +7,7 @@ export class DeletarPostUseCase{
     async handler(autor_id: number, post_id: number){
         const autor = await this.usuarioRepository.buscarPorId(autor_id);
         const post = await this.postRepository.buscarPorId(post_id)
-        if(autor?.perfil_id == 2){
+        if(autor?.perfil_id == 2 || autor?.perfil_id == 3){
             if(post){
                 return this.postRepository.deletar(post_id);
             }
