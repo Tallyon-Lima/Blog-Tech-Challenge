@@ -14,12 +14,29 @@ vi.mock("@/repositories/usuario.repository.js", () => ({
   },
 }));
 
+vi.mock("@/lib/nodemailer/NodemailerEmailProvider .js", () => ({
+  NodemailerEmailProvider: class {},
+}));
+
+const enviarEmailHandlerMock = vi.fn();
+
+vi.mock("@/use-cases/email/enviar-acesso-email.js", () => {
+  class MockEnviarEmailAcessoUseCase {
+    handler = enviarEmailHandlerMock;
+  }
+
+  return {
+    EnviarEmailAcessoUseCase: MockEnviarEmailAcessoUseCase,
+  };
+});
+
 describe("CriarUsuarioUseCase", () => {
   let repository: UsuarioRepository;
   let useCase: CriarUsuarioUseCase;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    enviarEmailHandlerMock.mockResolvedValue(undefined);
     repository = new UsuarioRepository();
     useCase = new CriarUsuarioUseCase(repository);
   });
@@ -52,6 +69,13 @@ describe("CriarUsuarioUseCase", () => {
         perfil_id: PerfilUsuario.ALUNO,
         cpf: "12345678900",
         senha: "senha-hash",
+      })
+    );
+
+    expect(enviarEmailHandlerMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        nome: "Novo Aluno",
+        email: "aluno@teste.com",
       })
     );
 
@@ -130,8 +154,8 @@ describe("CriarUsuarioUseCase", () => {
 
   it("deve usar o único nome quando o usuário não possui sobrenome", async () => {
     const novoUsuario = {
-      nome: "Tallyon",
-      email: "tallyon@teste.com",
+      nome: "Ronaldo",
+      email: "ronaldo@teste.com",
       senha: "senha-antiga",
       perfil_id: PerfilUsuario.ALUNO,
       cpf: "12345678910",
@@ -152,7 +176,7 @@ describe("CriarUsuarioUseCase", () => {
     const bcrypt = await import("bcryptjs");
 
     expect(bcrypt.hash).toHaveBeenCalledWith(
-      expect.stringMatching(/^tallyon[@#$%&*!]910$/),
+      expect.stringMatching(/^ronaldo[@#$%&*!]910$/),
       10
     );
   });
@@ -217,6 +241,7 @@ describe("CriarUsuarioUseCase", () => {
 
     expect(resultAluno).toBe("sem_permissao");
     expect(repository.criar).not.toHaveBeenCalled();
+    expect(enviarEmailHandlerMock).not.toHaveBeenCalled();
 
     const resultProf = await useCase.handler(
       novoUsuario as any,
@@ -226,6 +251,7 @@ describe("CriarUsuarioUseCase", () => {
 
     expect(resultProf).toBe("sem_permissao");
     expect(repository.criar).not.toHaveBeenCalled();
+    expect(enviarEmailHandlerMock).not.toHaveBeenCalled();
   });
 
   it("deve negar permissão se o solicitante não for encontrado", async () => {
@@ -246,5 +272,30 @@ describe("CriarUsuarioUseCase", () => {
 
     expect(result).toBe("sem_permissao");
     expect(repository.criar).not.toHaveBeenCalled();
+    expect(enviarEmailHandlerMock).not.toHaveBeenCalled();
+  });
+
+  it("não deve enviar e-mail quando o retorno do repositório não tiver nome ou email", async () => {
+    const novoUsuario = {
+      nome: "Novo Aluno",
+      email: "aluno@teste.com",
+      senha: "senha-antiga",
+      perfil_id: PerfilUsuario.ALUNO,
+      cpf: "12345678900",
+    };
+
+    vi.mocked(repository.criar).mockResolvedValue({
+      id: 15,
+      nome: undefined,
+      email: undefined,
+    } as any);
+
+    await useCase.handler(
+      novoUsuario as any,
+      99,
+      PerfilUsuario.ADMIN
+    );
+
+    expect(enviarEmailHandlerMock).not.toHaveBeenCalled();
   });
 });

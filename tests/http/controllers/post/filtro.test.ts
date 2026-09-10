@@ -27,6 +27,7 @@ describe("Controller - filtro post", () => {
     request = {
       query: {
         paginaAtual: 1,
+        itensPagina: 6,
         pesquisa: "teste",
       },
     };
@@ -53,7 +54,7 @@ describe("Controller - filtro post", () => {
 
     await filtro(request, reply);
 
-    expect(handlerMock).toHaveBeenCalledWith(1, "teste");
+    expect(handlerMock).toHaveBeenCalledWith(1, 6, "teste");
     expect(reply.status).toHaveBeenCalledWith(200);
     expect(reply.send).toHaveBeenCalledWith(listaPost);
   });
@@ -65,7 +66,7 @@ describe("Controller - filtro post", () => {
 
     await filtro(request, reply);
 
-    expect(handlerMock).toHaveBeenCalledWith(1, "teste");
+    expect(handlerMock).toHaveBeenCalledWith(1, 6, "teste");
     expect(reply.status).toHaveBeenCalledWith(200);
     expect(reply.send).toHaveBeenCalledWith([]);
   });
@@ -77,7 +78,27 @@ describe("Controller - filtro post", () => {
 
     await filtro(request, reply);
 
-    expect(handlerMock).toHaveBeenCalledWith(5, "teste");
+    expect(handlerMock).toHaveBeenCalledWith(5, 6, "teste");
+  });
+
+  it("deve definir itensPagina como 1 quando for menor que 1", async () => {
+    request.query.itensPagina = 0;
+
+    handlerMock.mockResolvedValue([]);
+
+    await filtro(request, reply);
+
+    expect(handlerMock).toHaveBeenCalledWith(1, 1, "teste");
+  });
+
+  it("deve usar itensPagina padrão (1) quando não informado", async () => {
+    delete request.query.itensPagina;
+
+    handlerMock.mockResolvedValue([]);
+
+    await filtro(request, reply);
+
+    expect(handlerMock).toHaveBeenCalledWith(1, 1, "teste");
   });
 
   it("deve lançar erro quando o use case lançar exceção", async () => {
@@ -90,6 +111,14 @@ describe("Controller - filtro post", () => {
 
   it("deve lançar erro quando paginaAtual for inválida", async () => {
     request.query.paginaAtual = {};
+
+    await expect(filtro(request, reply)).rejects.toThrow(
+      "Error get post"
+    );
+  });
+
+  it("deve lançar erro quando itensPagina for inválida", async () => {
+    request.query.itensPagina = {};
 
     await expect(filtro(request, reply)).rejects.toThrow(
       "Error get post"

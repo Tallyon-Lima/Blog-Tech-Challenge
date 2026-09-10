@@ -27,6 +27,7 @@ describe("Controller - listar post", () => {
     request = {
       query: {
         paginaAtual: 1,
+        itensPagina: 6,
       },
     };
 
@@ -52,7 +53,7 @@ describe("Controller - listar post", () => {
 
     await listar(request, reply);
 
-    expect(handlerMock).toHaveBeenCalledWith(1);
+    expect(handlerMock).toHaveBeenCalledWith(1, 6);
     expect(reply.status).toHaveBeenCalledWith(200);
     expect(reply.send).toHaveBeenCalledWith(listaPost);
   });
@@ -64,7 +65,7 @@ describe("Controller - listar post", () => {
 
     await listar(request, reply);
 
-    expect(handlerMock).toHaveBeenCalledWith(1);
+    expect(handlerMock).toHaveBeenCalledWith(1, 6);
     expect(reply.status).toHaveBeenCalledWith(200);
     expect(reply.send).toHaveBeenCalledWith([]);
   });
@@ -76,7 +77,31 @@ describe("Controller - listar post", () => {
 
     await listar(request, reply);
 
-    expect(handlerMock).toHaveBeenCalledWith(5);
+    expect(handlerMock).toHaveBeenCalledWith(5, 6);
+    expect(reply.status).toHaveBeenCalledWith(200);
+    expect(reply.send).toHaveBeenCalledWith([]);
+  });
+
+  it("deve definir itensPagina como 6 quando o valor for menor que 1", async () => {
+    request.query.itensPagina = 0;
+
+    handlerMock.mockResolvedValue([]);
+
+    await listar(request, reply);
+
+    expect(handlerMock).toHaveBeenCalledWith(1, 6);
+    expect(reply.status).toHaveBeenCalledWith(200);
+    expect(reply.send).toHaveBeenCalledWith([]);
+  });
+
+  it("deve manter itensPagina quando o valor for maior que 0", async () => {
+    request.query.itensPagina = 10;
+
+    handlerMock.mockResolvedValue([]);
+
+    await listar(request, reply);
+
+    expect(handlerMock).toHaveBeenCalledWith(1, 10);
     expect(reply.status).toHaveBeenCalledWith(200);
     expect(reply.send).toHaveBeenCalledWith([]);
   });
@@ -91,6 +116,14 @@ describe("Controller - listar post", () => {
 
   it("deve lançar erro quando paginaAtual for inválida", async () => {
     request.query.paginaAtual = {};
+
+    await expect(listar(request, reply)).rejects.toThrow(
+      "Error get post"
+    );
+  });
+
+  it("deve lançar erro quando itensPagina for inválida", async () => {
+    request.query.itensPagina = {};
 
     await expect(listar(request, reply)).rejects.toThrow(
       "Error get post"

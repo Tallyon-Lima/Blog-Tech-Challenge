@@ -49,12 +49,17 @@ describe("PostRepository", () => {
       rows: posts,
     } as any);
 
-    const result = await repository.listar(1);
+    const result = await repository.listar(1, 6);
 
     expect(queryMock).toHaveBeenCalledWith(
       expect.stringContaining("SELECT"),
-      []
+      [6, 0]
     );
+
+    const [sql] = queryMock.mock.calls[0];
+    expect(sql).not.toContain("ILIKE");
+    expect(sql).toContain("LIMIT $1");
+    expect(sql).toContain("OFFSET $2");
 
     expect(result).toEqual(posts);
   });
@@ -66,14 +71,31 @@ describe("PostRepository", () => {
       rows: posts,
     } as any);
 
-    const result = await repository.listar(2, "Node");
+    const result = await repository.listar(2, 6, "Node");
 
     expect(queryMock).toHaveBeenCalledWith(
       expect.stringContaining("ILIKE"),
-      ["%Node%"]
+      ["%Node%", 6, 6]
     );
 
+    const [sql] = queryMock.mock.calls[0];
+    expect(sql).toContain("LIMIT $2");
+    expect(sql).toContain("OFFSET $3");
+
     expect(result).toEqual(posts);
+  });
+
+  it("deve calcular o offset corretamente para páginas maiores que 1", async () => {
+    queryMock.mockResolvedValue({
+      rows: [],
+    } as any);
+
+    await repository.listar(3, 10);
+
+    expect(queryMock).toHaveBeenCalledWith(
+      expect.stringContaining("SELECT"),
+      [10, 20]
+    );
   });
 
   it("deve buscar um post por id", async () => {
@@ -164,7 +186,7 @@ describe("PostRepository", () => {
       rows: [],
     } as any);
 
-    const result = await repository.listar(1);
+    const result = await repository.listar(1, 6);
 
     expect(result).toEqual([]);
   });
