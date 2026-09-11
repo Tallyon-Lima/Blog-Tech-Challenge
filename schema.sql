@@ -30,6 +30,15 @@ ADD COLUMN IF NOT EXISTS perfil_id bigint not NULL;
 alter table usuarios
 ADD COLUMN IF NOT EXISTS cpf VARCHAR(14) NOT NULL;
 
+INSERT INTO usuarios (nome, email, senha, cpf, perfil_id)
+VALUES (
+    'Admin', 
+    'admin@teste.com', 
+    '$2a$12$qkglg5uMWxL4m6HRQtHPi.3AFY3M2p3TG1bVjOK35tNpxaTiBiwga',
+    '12345678901',
+    (SELECT id FROM perfil_acesso WHERE nome = 'Admin' LIMIT 1)
+);
+
 INSERT INTO public.perfil_acesso (nome)
 VALUES
     ('Aluno'),
