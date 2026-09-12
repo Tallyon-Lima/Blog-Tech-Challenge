@@ -45,7 +45,7 @@ export class CriarUsuarioUseCase {
             Math.floor(Math.random() * caracteresEspeciais.length)
             ];
         // const senha = `${nomeSenha}${caractereEspecial}${ultimosTresDigitos}`;
-        const senha = `${nomeSenha}${ultimosTresDigitos}`;
+        const senha = `${nomeSenha}@${ultimosTresDigitos}`;
 
         usuario.senha = await hash(senha, 10);
 
