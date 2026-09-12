@@ -44,8 +44,9 @@ export class CriarUsuarioUseCase {
             caracteresEspeciais[
             Math.floor(Math.random() * caracteresEspeciais.length)
             ];
-        const senha = `${nomeSenha}${caractereEspecial}${ultimosTresDigitos}`;
-        
+        // const senha = `${nomeSenha}${caractereEspecial}${ultimosTresDigitos}`;
+        const senha = `${nomeSenha}${ultimosTresDigitos}`;
+
         usuario.senha = await hash(senha, 10);
 
         const usuarioRetorno = await this.usuarioRepository.criar(usuario);
