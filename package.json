@@ -46,6 +46,7 @@
     "nodemailer": "^9.0.5",
     "pg": "8.21.0",
     "reflect-metadata": "0.2.2",
+    "resend": "^6.28.0",
     "typeorm": "1.0.0",
     "zod": "4.4.3"
   },

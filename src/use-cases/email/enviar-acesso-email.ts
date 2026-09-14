@@ -1,4 +1,5 @@
 import type { NodemailerEmailProvider } from "@/lib/nodemailer/NodemailerEmailProvider .js";
+import type { ResendEmailProvider } from "@/lib/resend/ResendEmailProvider.js";
 
 interface EnviarEmailAcessoRequest {
   nome: string;
@@ -8,7 +9,7 @@ interface EnviarEmailAcessoRequest {
 
 export class EnviarEmailAcessoUseCase {
   constructor(
-    private emailProvider: NodemailerEmailProvider
+    private emailResendProvider: ResendEmailProvider
   ) { }
 
   async handler({
@@ -85,7 +86,13 @@ export class EnviarEmailAcessoUseCase {
     </html>
     `;
 
-    await this.emailProvider.send({
+    // await this.emailProvider.send({
+    //   to: email,
+    //   subject: "Acesso à plataforma - Blog Tech",
+    //   html,
+    // });
+
+    await this.emailResendProvider.send({
       to: email,
       subject: "Acesso à plataforma - Blog Tech",
       html,
