@@ -2,12 +2,13 @@ import type { Usuario } from "@/entities/usuario.entity.js";
 import type { UsuarioRepository } from "@/repositories/usuario.repository.js";
 import { isPerfilAdmin } from "@/entities/models/perfil.enum.js";
 import { hash } from "bcryptjs";
-import { NodemailerEmailProvider } from "@/lib/nodemailer/NodemailerEmailProvider .js";
 import { EnviarEmailAcessoUseCase } from "../email/enviar-acesso-email.js";
-import { ResendEmailProvider } from "@/lib/resend/ResendEmailProvider.js";
+import { BrevoEmailProvider } from "@/lib/brevo/BrevoEmailProvider.js";
 
 export class CriarUsuarioUseCase {
-    constructor(private usuarioRepository: UsuarioRepository) { }
+    constructor(
+        private usuarioRepository: UsuarioRepository
+    ) { }
 
     async handler(
         usuario: Usuario,
@@ -40,12 +41,7 @@ export class CriarUsuarioUseCase {
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase();
         const ultimosTresDigitos = usuario.cpf.slice(-3);
-        const caracteresEspeciais = ["@", "#", "$", "%", "&", "*", "!",];
-        const caractereEspecial =
-            caracteresEspeciais[
-            Math.floor(Math.random() * caracteresEspeciais.length)
-            ];
-        // const senha = `${nomeSenha}${caractereEspecial}${ultimosTresDigitos}`;
+
         const senha = `${nomeSenha}@${ultimosTresDigitos}`;
 
         usuario.senha = await hash(senha, 10);
@@ -53,9 +49,10 @@ export class CriarUsuarioUseCase {
         const usuarioRetorno = await this.usuarioRepository.criar(usuario);
         console.log(usuarioRetorno?.nome)
         if (usuarioRetorno?.nome && usuarioRetorno?.email) {
-            // const emailProvider = new NodemailerEmailProvider();
-            const emailProvider = new ResendEmailProvider();
-            const enviarEmailAcessoUseCase = new EnviarEmailAcessoUseCase(emailProvider);
+            const emailBrevoProvider = new BrevoEmailProvider();
+
+            const enviarEmailAcessoUseCase =
+                new EnviarEmailAcessoUseCase(emailBrevoProvider);
 
             enviarEmailAcessoUseCase
                 .handler({
@@ -63,8 +60,12 @@ export class CriarUsuarioUseCase {
                     email: usuarioRetorno.email,
                     senha,
                 })
-                .catch((err) => console.error("Erro ao enviar email de acesso:", err))
-
+                .catch((err) =>
+                    console.error(
+                        "Erro ao enviar email de acesso:",
+                        err
+                    )
+                );
         }
 
         return usuarioRetorno;

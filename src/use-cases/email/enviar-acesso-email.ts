@@ -1,5 +1,4 @@
-import type { NodemailerEmailProvider } from "@/lib/nodemailer/NodemailerEmailProvider .js";
-import type { ResendEmailProvider } from "@/lib/resend/ResendEmailProvider.js";
+import type { BrevoEmailProvider } from "@/lib/brevo/BrevoEmailProvider.js";
 
 interface EnviarEmailAcessoRequest {
   nome: string;
@@ -9,7 +8,7 @@ interface EnviarEmailAcessoRequest {
 
 export class EnviarEmailAcessoUseCase {
   constructor(
-    private emailResendProvider: ResendEmailProvider
+    private emaiBrevoProvider: BrevoEmailProvider
   ) { }
 
   async handler({
@@ -92,8 +91,9 @@ export class EnviarEmailAcessoUseCase {
     //   html,
     // });
 
-    await this.emailResendProvider.send({
+    await this.emaiBrevoProvider.send({
       to: email,
+      name: nome,
       subject: "Acesso à plataforma - Blog Tech",
       html,
     });
