@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 import { EnviarEmailAcessoUseCase } from "@/use-cases/email/enviar-acesso-email.js";
 import { NodemailerEmailProvider } from "@/lib/nodemailer/NodemailerEmailProvider .js";
+import { ResendEmailProvider } from "@/lib/resend/ResendEmailProvider.js";
 
 export async function enviarEmailAcesso(
     request: FastifyRequest,
@@ -17,8 +18,10 @@ export async function enviarEmailAcesso(
         enviarEmailAcessoBodySchema.parse(request.body);
 
     try {
-        const emailProvider = new NodemailerEmailProvider();
-
+        // const emailProvider = new NodemailerEmailProvider();
+        const emailProvider = new ResendEmailProvider();
+        
+        
         const enviarEmailAcessoUseCase =
             new EnviarEmailAcessoUseCase(emailProvider);
 

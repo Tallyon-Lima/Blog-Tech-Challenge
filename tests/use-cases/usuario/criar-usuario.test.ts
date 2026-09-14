@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { CriarUsuarioUseCase } from "@/use-cases/usuario/criar-usuario.js";
+
 import { UsuarioRepository } from "@/repositories/usuario.repository.js";
+
 import { PerfilUsuario } from "@/entities/models/perfil.enum.js";
 
 vi.mock("bcryptjs", () => ({
@@ -14,8 +17,9 @@ vi.mock("@/repositories/usuario.repository.js", () => ({
   },
 }));
 
-vi.mock("@/lib/nodemailer/NodemailerEmailProvider .js", () => ({
-  NodemailerEmailProvider: class {},
+// Mock do novo provedor de e-mail
+vi.mock("@/lib/resend/ResendEmailProvider.js", () => ({
+  ResendEmailProvider: class {},
 }));
 
 const enviarEmailHandlerMock = vi.fn();
@@ -36,8 +40,11 @@ describe("CriarUsuarioUseCase", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
     enviarEmailHandlerMock.mockResolvedValue(undefined);
+
     repository = new UsuarioRepository();
+
     useCase = new CriarUsuarioUseCase(repository);
   });
 
@@ -107,12 +114,10 @@ describe("CriarUsuarioUseCase", () => {
       PerfilUsuario.ADMIN
     );
 
-    // Como o caractere especial é aleatório,
-    // verificamos o formato da senha enviada para o hash.
     const bcrypt = await import("bcryptjs");
 
     expect(bcrypt.hash).toHaveBeenCalledWith(
-      expect.stringMatching(/^aluno[@#$%&*!]900$/),
+      "aluno@900",
       10
     );
 
@@ -147,7 +152,7 @@ describe("CriarUsuarioUseCase", () => {
     const bcrypt = await import("bcryptjs");
 
     expect(bcrypt.hash).toHaveBeenCalledWith(
-      expect.stringMatching(/^junior[@#$%&*!]351$/),
+      "junior@351",
       10
     );
   });
@@ -176,7 +181,7 @@ describe("CriarUsuarioUseCase", () => {
     const bcrypt = await import("bcryptjs");
 
     expect(bcrypt.hash).toHaveBeenCalledWith(
-      expect.stringMatching(/^ronaldo[@#$%&*!]910$/),
+      "ronaldo@910",
       10
     );
   });
@@ -240,7 +245,9 @@ describe("CriarUsuarioUseCase", () => {
     );
 
     expect(resultAluno).toBe("sem_permissao");
+
     expect(repository.criar).not.toHaveBeenCalled();
+
     expect(enviarEmailHandlerMock).not.toHaveBeenCalled();
 
     const resultProf = await useCase.handler(
@@ -250,7 +257,9 @@ describe("CriarUsuarioUseCase", () => {
     );
 
     expect(resultProf).toBe("sem_permissao");
+
     expect(repository.criar).not.toHaveBeenCalled();
+
     expect(enviarEmailHandlerMock).not.toHaveBeenCalled();
   });
 
@@ -271,7 +280,9 @@ describe("CriarUsuarioUseCase", () => {
     );
 
     expect(result).toBe("sem_permissao");
+
     expect(repository.criar).not.toHaveBeenCalled();
+
     expect(enviarEmailHandlerMock).not.toHaveBeenCalled();
   });
 
