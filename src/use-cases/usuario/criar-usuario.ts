@@ -53,15 +53,16 @@ export class CriarUsuarioUseCase {
         console.log(usuarioRetorno?.nome)
         if (usuarioRetorno?.nome && usuarioRetorno?.email) {
             const emailProvider = new NodemailerEmailProvider();
-            const enviarEmailAcessoUseCase =
-                new EnviarEmailAcessoUseCase(emailProvider);
+            const enviarEmailAcessoUseCase = new EnviarEmailAcessoUseCase(emailProvider);
 
-            await enviarEmailAcessoUseCase.handler({
-                nome: usuarioRetorno.nome,
-                email: usuarioRetorno.email,
-                senha,
-            });
-        
+            enviarEmailAcessoUseCase
+                .handler({
+                    nome: usuarioRetorno.nome,
+                    email: usuarioRetorno.email,
+                    senha,
+                })
+                .catch((err) => console.error("Erro ao enviar email de acesso:", err))
+
         }
 
         return usuarioRetorno;
