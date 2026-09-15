@@ -4,8 +4,11 @@ import { isPerfilAdmin } from "@/entities/models/perfil.enum.js";
 import { hash } from "bcryptjs";
 import { EmailJSEmailProvider } from "@/lib/emailjs/EmailJSEmailProvider.js";
 import { EnviarEmailAcessoUseCase } from "../email/enviar-acesso-email.js";
+
 export class CriarUsuarioUseCase {
-    constructor(private usuarioRepository: UsuarioRepository) { }
+    constructor(
+        private usuarioRepository: UsuarioRepository
+    ) { }
 
     async handler(
         usuario: Usuario,
@@ -38,12 +41,7 @@ export class CriarUsuarioUseCase {
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase();
         const ultimosTresDigitos = usuario.cpf.slice(-3);
-        const caracteresEspeciais = ["@", "#", "$", "%", "&", "*", "!",];
-        const caractereEspecial =
-            caracteresEspeciais[
-            Math.floor(Math.random() * caracteresEspeciais.length)
-            ];
-        // const senha = `${nomeSenha}${caractereEspecial}${ultimosTresDigitos}`;
+
         const senha = `${nomeSenha}@${ultimosTresDigitos}`;
 
         usuario.senha = await hash(senha, 10);
@@ -53,15 +51,18 @@ export class CriarUsuarioUseCase {
         if (usuarioRetorno?.nome && usuarioRetorno?.email) {
             const emailProvider = new EmailJSEmailProvider();
             const enviarEmailAcessoUseCase = new EnviarEmailAcessoUseCase(emailProvider);
-
             enviarEmailAcessoUseCase
                 .handler({
                     nome: usuarioRetorno.nome,
                     email: usuarioRetorno.email,
                     senha,
                 })
-                .catch((err) => console.error("Erro ao enviar email de acesso:", err))
-
+                .catch((err) =>
+                    console.error(
+                        "Erro ao enviar email de acesso:",
+                        err
+                    )
+                );
         }
 
         return usuarioRetorno;

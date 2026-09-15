@@ -3,6 +3,7 @@ import z from "zod";
 import { EnviarEmailAcessoUseCase } from "@/use-cases/email/enviar-acesso-email.js";
 import { EmailJSEmailProvider } from "@/lib/emailjs/EmailJSEmailProvider.js";
 
+
 export async function enviarEmailAcesso(
     request: FastifyRequest,
     reply: FastifyReply
@@ -18,7 +19,7 @@ export async function enviarEmailAcesso(
 
     try {
         const emailProvider = new EmailJSEmailProvider();
-        
+
         const enviarEmailAcessoUseCase =
             new EnviarEmailAcessoUseCase(emailProvider);
 

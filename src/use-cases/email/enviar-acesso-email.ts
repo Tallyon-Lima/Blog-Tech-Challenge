@@ -1,5 +1,6 @@
 import type { EmailJSEmailProvider } from "@/lib/emailjs/EmailJSEmailProvider.js";
 
+
 interface EnviarEmailAcessoRequest {
   nome: string;
   email: string;
