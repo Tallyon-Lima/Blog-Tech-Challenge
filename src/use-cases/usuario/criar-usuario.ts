@@ -2,10 +2,8 @@ import type { Usuario } from "@/entities/usuario.entity.js";
 import type { UsuarioRepository } from "@/repositories/usuario.repository.js";
 import { isPerfilAdmin } from "@/entities/models/perfil.enum.js";
 import { hash } from "bcryptjs";
-import { NodemailerEmailProvider } from "@/lib/nodemailer/NodemailerEmailProvider .js";
+import { EmailJSEmailProvider } from "@/lib/emailjs/EmailJSEmailProvider.js";
 import { EnviarEmailAcessoUseCase } from "../email/enviar-acesso-email.js";
-import { ResendEmailProvider } from "@/lib/resend/ResendEmailProvider.js";
-
 export class CriarUsuarioUseCase {
     constructor(private usuarioRepository: UsuarioRepository) { }
 
@@ -53,8 +51,7 @@ export class CriarUsuarioUseCase {
         const usuarioRetorno = await this.usuarioRepository.criar(usuario);
         console.log(usuarioRetorno?.nome)
         if (usuarioRetorno?.nome && usuarioRetorno?.email) {
-            // const emailProvider = new NodemailerEmailProvider();
-            const emailProvider = new ResendEmailProvider();
+            const emailProvider = new EmailJSEmailProvider();
             const enviarEmailAcessoUseCase = new EnviarEmailAcessoUseCase(emailProvider);
 
             enviarEmailAcessoUseCase
