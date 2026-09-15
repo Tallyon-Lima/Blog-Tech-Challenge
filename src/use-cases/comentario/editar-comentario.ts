@@ -17,8 +17,8 @@ export class EditarComentarioUseCase {
         
         if (!comentarioExistente) return null;
 
-        // Se for professor (perfil 2), edita direto.
-        if (Number(usuario.perfil_id) === 2) {
+        // Se for professor (perfil 2) Admin, edita direto.
+        if (Number(usuario.perfil_id) === 2 || Number(usuario.perfil_id) === 3) {
             return this.comentarioRepository.editar(comentarioInput);
         }
         

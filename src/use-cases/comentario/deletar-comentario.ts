@@ -16,8 +16,8 @@ export class DeletarComentarioUseCase {
         
         if (!comentarioExistente) return null;
 
-        // Se for professor (perfil 2), deleta direto.
-        if (Number(usuario.perfil_id) === 2) {
+        // Se for professor (perfil 2) ou Admin, deleta direto.
+        if (Number(usuario.perfil_id) === 2 || Number(usuario.perfil_id) === 3) {
             return this.comentarioRepository.deletar(id);
         }
         
