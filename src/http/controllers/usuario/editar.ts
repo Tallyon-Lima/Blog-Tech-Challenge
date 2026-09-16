@@ -1,4 +1,4 @@
-import { UsuarioRepository } from "@/repositories/usuario.repository.js";
+﻿import { UsuarioRepository } from "@/repositories/usuario.repository.js";
 import { EditarUsuarioUseCase } from "@/use-cases/usuario/editar-usuario.js";
 import type { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
@@ -22,10 +22,12 @@ export async function editar(request: FastifyRequest, reply: FastifyReply) {
         const usuarioRepository = new UsuarioRepository();
         const editarUsuarioUseCase = new EditarUsuarioUseCase(usuarioRepository);
 
+        const usuarioExistente = await usuarioRepository.buscarPorId(id);
+
         const usuario = await editarUsuarioUseCase.handler({
             nome,
             email,
-            senha: "",
+            senha: usuarioExistente?.senha ?? "",
             perfil_id,
             cpf,
             id

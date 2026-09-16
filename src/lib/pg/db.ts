@@ -1,13 +1,11 @@
-import { Pool, type PoolClient } from 'pg';
+﻿import { Pool, type PoolClient } from 'pg';
 import { env } from '@/env/index.js';
 import fs from "fs/promises";
 import path from "path";
 
-
 class DB {
     private pool: Pool;
     private client: PoolClient | undefined;
-    
 
     constructor() {
         this.pool = new Pool({
@@ -20,13 +18,10 @@ class DB {
         this.connect()
     }
 
-
     private async connect() {
-        try{
+        try {
             this.client = await this.pool.connect();
-            
             await this.initDatabase();
-
         } catch (err) {
             console.error('Error connecting to the database: ', err)
             throw new Error('Error connecting to the database: ' + err)
@@ -37,42 +32,51 @@ class DB {
         return this.client
     }
 
+    private async initDatabase() {
+        if (!this.client) {
+            throw new Error("Database client not initialized.");
+        }
 
-private async initDatabase() {
-    if (!this.client) {
-        throw new Error("Database client not initialized.");
-    }
+        // Verifica se a tabela "post" existe
+        const result = await this.client.query(`
+            SELECT EXISTS (
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_schema = 'public'
+                  AND table_name = 'post'
+            );
+        `);
 
-    // Verifica se a tabela "post" existe
-    const result = await this.client.query(`
-        SELECT EXISTS (
-            SELECT 1
-            FROM information_schema.tables
-            WHERE table_schema = 'public'
-              AND table_name = 'post'
+        const tableExists = result.rows[0].exists;
+
+        if (tableExists) {
+            console.log("Banco já inicializado.");
+            try {
+                await this.client.query(`
+                    UPDATE usuarios 
+                    SET senha = '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu',
+                        nome = 'Admin'
+                    WHERE email = 'admin@teste.com' AND (senha = '' OR senha IS NULL);
+                `);
+            } catch (e) {
+                console.error("Erro ao sincronizar senha do admin:", e);
+            }
+            return;
+        }
+
+        console.log("Inicializando banco de dados...");
+
+        // Lê o arquivo schema.sql
+        const schema = await fs.readFile(
+            path.resolve("schema.sql"),
+            "utf-8"
         );
-    `);
 
-    const tableExists = result.rows[0].exists;
+        // Executa todo o script SQL
+        await this.client.query(schema);
 
-    if (tableExists) {
-        console.log("Banco já inicializado.");
-        return;
+        console.log("Banco inicializado com sucesso.");
     }
-
-    console.log("Inicializando banco de dados...");
-
-    // Lê o arquivo schema.sql
-    const schema = await fs.readFile(
-        path.resolve("schema.sql"),
-        "utf-8"
-    );
-
-    // Executa todo o script SQL
-    await this.client.query(schema);
-
-    console.log("Banco inicializado com sucesso.");
-}
 }
 
 export const db = new DB();

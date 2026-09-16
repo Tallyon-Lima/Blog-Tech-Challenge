@@ -1,4 +1,4 @@
--- Active: 1781218750256@@127.0.0.1@5432
+﻿-- Active: 1781218750256@@127.0.0.1@5432
 
 CREATE TABLE IF NOT EXISTS post (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -42,7 +42,7 @@ INSERT INTO usuarios (nome, email, senha, cpf, perfil_id)
 VALUES (
     'Admin', 
     'admin@teste.com', 
-    '$2a$12$qkglg5uMWxL4m6HRQtHPi.3AFY3M2p3TG1bVjOK35tNpxaTiBiwga',
+    '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu',
     '12345678901',
     (SELECT id FROM perfil_acesso WHERE nome = 'Admin' LIMIT 1)
 );
