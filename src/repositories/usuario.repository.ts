@@ -18,7 +18,7 @@ export class UsuarioRepository {
         const result = await db.clientInstance?.query(
             `SELECT * FROM usuarios WHERE id = ${id}`
         );
-        return result?.rows[0]; 
+        return result?.rows[0];
     }
 
     public async findByUsername(email: string): Promise<IUsuario | undefined> {
@@ -41,13 +41,34 @@ export class UsuarioRepository {
         return result?.rows[0];
     }
 
-    public async listar(): Promise<Usuario[] | undefined> {
-        const result = await db.clientInstance?.query(
-            `SELECT * FROM usuarios`
-        );
-        return result?.rows;
-    }
+    public async listar(
+        page: number,
+        limit: number
+    ): Promise<{ data: Usuario[]; totalPages: number; total: number }> {
 
+        const offset = (page - 1) * limit;
+
+        const result = await db.clientInstance?.query(
+            `SELECT * FROM usuarios
+         ORDER BY id
+         LIMIT $1 OFFSET $2`,
+            [limit, offset]
+        );
+
+        const countResult = await db.clientInstance?.query(
+            `SELECT COUNT(*) FROM usuarios`
+        );
+
+        const total = Number(countResult?.rows[0].count ?? 0);
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            data: result?.rows ?? [],
+            total,
+            totalPages
+        };
+    }
+    
     public async deletar(id: number): Promise<String> {
         await db.clientInstance?.query(
             `DELETE FROM usuarios WHERE id = ${id}`
