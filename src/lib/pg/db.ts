@@ -72,9 +72,9 @@ class DB {
             "utf-8"
         );
 
-        // Executa todo o script SQL
-        await this.client.query(schema);
+        const cleanSchema = schema.replace(/^\uFEFF/, "");
 
+        await this.client.query(cleanSchema);
         console.log("Banco inicializado com sucesso.");
     }
 }
