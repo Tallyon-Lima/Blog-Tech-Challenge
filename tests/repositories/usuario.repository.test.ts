@@ -200,17 +200,33 @@ describe("UsuarioRepository", () => {
   it("deve listar todos os usuários", async () => {
     const usuarios = [{ id: 1 }, { id: 2 }];
 
-    queryMock.mockResolvedValue({
-      rows: usuarios,
-    } as any);
+    queryMock
+      .mockResolvedValueOnce({
+        rows: usuarios,
+      } as any)
+      .mockResolvedValueOnce({
+        rows: [{ count: "2" }],
+      } as any);
 
-    const result = await repository.listar();
+    const result = await repository.listar(1, 10);
 
-    expect(queryMock).toHaveBeenCalledWith(
-      `SELECT * FROM usuarios`
+    expect(queryMock).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining("LIMIT $1"),
+      [10, 0]
     );
 
-    expect(result).toEqual(usuarios);
+    expect(queryMock).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining("SELECT COUNT(*)"),
+      []
+    );
+
+    expect(result).toEqual({
+      data: usuarios,
+      total: 2,
+      totalPages: 1,
+    });
   });
 
   it("deve editar um usuário", async () => {
