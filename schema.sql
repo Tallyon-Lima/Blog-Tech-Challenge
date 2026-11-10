@@ -79,9 +79,9 @@ SELECT v.nome, v.email, v.senha, v.cpf,
        (SELECT id FROM perfil_acesso WHERE nome = v.perfil LIMIT 1)
 FROM (VALUES
     ('Admin',    'admin@teste.com',              '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu', '12345678901', 'Admin'),
-    ('Tallyon',  'tallyon26@gmail.com',          '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu', '32323232323', 'Professor'),
-    ('Jamil',    'jamilsalomao2003@gmail.com',   '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu', '32323232323', 'Professor'),
-    ('Danilo',   'danilolugli0101@gmail.com',    '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu', '32323232323', 'Professor'),
+    ('Tallyon',  'tallyon26@gmail.com',          '$2a$12$.1u1x2VPephFD3KeWypM4eCQCgWueRu5o1oKyOMWE5uLDDYezaYb6', '32323232323', 'Professor'),
+    ('Jamil',    'jamilsalomao2003@gmail.com',   '$$2a$12$FEr6JGo2FemXpjWKoiobaOw/gsq7PqQoAd8aKt1VBY7FrcDGqqjeu', '32323232323', 'Professor'),
+    ('Danilo',   'danilolugli0101@gmail.com',    '$2a$12$YGCZ16XRfxlpBr51fPlsxOGcK97j2JCmWQF2weqZUug0aKn2ch0x6', '32323232323', 'Professor'),
     ('Maria Silva',   'professor@teste.com',     '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu', '98765432100', 'Professor'),
     ('João Santos',   'professor2@teste.com',    '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu', '11122233344', 'Professor'),
     ('Ana Oliveira',  'aluno@teste.com',         '$2b$10$LAP75v687f9Amm5dXS3dVe7qdHuYucJwibP5vzcnCd2RyacLShbtu', '55566677788', 'Aluno'),
